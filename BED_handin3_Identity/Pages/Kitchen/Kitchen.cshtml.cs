@@ -1,28 +1,51 @@
+using BED_handin3_Identity.Data;
+using BED_handin3_Identity.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace BED_handin3_Identity.Pages.Kitchen
 {
     public class KitchenModel : PageModel
     {
-        public string? Date { get; set; }
-        public string? DateReverse { get; set; }
-
-        public void OnGet()
+        private readonly ApplicationDbContext _context;
+        // Constructor
+        public KitchenModel(ApplicationDbContext context)
         {
-            Date = DateTime.Now.ToShortDateString();
-            DateReverse = DateTime.Now.ToString("yyyy-MM-dd");
+            _context = context;
+        }
+
+        // Bind properties here (for the booking)
+        [BindProperty] public DateTime ChosenDate { get; set; } = DateTime.Today;
+        public List<Guest> GuestList { get; set; } = new List<Guest>();
 
 
-            //Call get method(date)
-            /*Display the following:
-                Expected number of guests
-                Adults checked in 
-                Children checked in 
-                Guests yet to check in   
-            */
+        public async Task<IActionResult> OnGetAsync()
+        {
+            // Find all booked guests for the date 
+            var bookingList = await _context.Bookings.Where(b => b.BookingDate == ChosenDate)
+                .Include(b => b.Guests).ToListAsync();
+
+            foreach (var booking in bookingList)
+            {
+                GuestList.AddRange(booking.Guests);
+            }
+            return Page();
+        }
 
 
+        // This method is called, when the date is updated
+        public async Task<IActionResult> OnPostAsync()
+        {
+            // Find all booked guests for the date 
+            var bookingList = await _context.Bookings.Where(b => b.BookingDate == ChosenDate)
+                .Include(b => b.Guests).ToListAsync();
+
+            foreach (var booking in bookingList)
+            {
+                GuestList.AddRange(booking.Guests);
+            }
+            return Page();
         }
     }
 }

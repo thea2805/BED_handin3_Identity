@@ -5,14 +5,80 @@
 }
 <h1>@ViewData["Title"]</h1>
 
-<h3>Choose a date to show information</h3>
+<h2>Choose a date to show information</h2>
 
 <br/>
 
-<form>
-	<label for="infoDate">Date:</label>
-	<input type="date" id="infoDate" value="@Model.DateReverse" name="info">
-	<input type="submit">
+<form method="post">
+	<label>Choose Date:</label>
+	<input asp-for="ChosenDate" type="date" id="infoDate">
+	<input type="submit" value="See Guests">
 </form>
 
 <br/>
+
+<div>
+	<h3>Number of Guests expected for breakfast</h3>
+		
+	<table>
+		<tr>
+			<th>Total number of Guests</th>
+			<th>Number of Adults</th>
+			<th>Number of Children</th>
+		</tr>
+		
+			<tr>
+				<td>@Model.GuestList.Count()</td>
+				<td>@Model.GuestList.Where(b => b.IsAdult).ToList().Count</td>
+				<td>@Model.GuestList.Where(b => !b.IsAdult).ToList().Count</td>
+			</tr>
+		
+	</table>
+
+</div>
+
+<br/>
+
+<div>
+	<h3>Number of Guests checked in for breakfast</h3>
+		
+	<table>
+		<tr>
+			<th>Total number of Guests</th>
+			<th>Number of Adults</th>
+			<th>Number of Children</th>
+		</tr>
+		
+			<tr>
+				<td>@Model.GuestList.Where(b => b.IsCheckedIn).ToList().Count()</td>
+				<td>@Model.GuestList.Where(b => b.IsAdult && b.IsCheckedIn).ToList().Count</td>
+				<td>@Model.GuestList.Where(b => !b.IsAdult && b.IsCheckedIn).ToList().Count</td>
+			</tr>
+		
+	</table>
+
+</div>
+
+<br/>
+
+<div>
+	<h3>Number of Guests not checked in for breakfast</h3>
+		
+	<table>
+		<tr>
+			<th>Total number of Guests</th>
+			<th>Number of Adults</th>
+			<th>Number of Children</th>
+		</tr>
+		
+			<tr>
+				<td>@Model.GuestList.Where(b => !b.IsCheckedIn).ToList().Count()</td>
+				<td>@Model.GuestList.Where(b => b.IsAdult && !b.IsCheckedIn).ToList().Count</td>
+				<td>@Model.GuestList.Where(b => !b.IsAdult && !b.IsCheckedIn).ToList().Count</td>
+			</tr>
+		
+	</table>
+
+</div>
+
+
