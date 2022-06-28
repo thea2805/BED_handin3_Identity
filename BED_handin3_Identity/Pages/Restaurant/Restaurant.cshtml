@@ -6,19 +6,36 @@
 <h1>@ViewData["Title"]</h1>
 
 <h3>Check in guests for breakfast here:</h3>
+
 <div>
-	<form method="post">
-		<label for="room">Room nr.</label>
-		<input type="text" id="room"/> <br><br>
-		
-		<label for="adults">Adults</label>
-		<input type="text" id="adults"/> <br><br>
-		
-		<label for="children">Children</label>
-		<input type="text" id="children"/> <br><br>
-		
-		<input type="submit" value="Submit">
+	<form method="post" asp-page-handler="Room">
+		<label>RoomNumber</label>
+		<select asp-for="@Model.SelectedRoomNumber" asp-items="@Model.SelectRooms" onchange="this.form.submit()">
+			<option value="" disabled selected>Choose Room</option>
+		</select>
+		<br><br>
 	</form>
-	
-	<p>@Model.Message</p>
+</div>
+<div>
+	<form method="post" asp-page-handler="Checkin">
+		<input type="hidden" asp-for="@Model.SelectedRoomNumber" value="@Model.SelectedRoomNumber" />
+		<label>Adults</label>
+		<select asp-for="@Model.Adults">
+			@for (int i = 0; i < Model.BreakfastBooking.Guests.Where(g => g.IsAdult && !g.IsCheckedIn).ToList().Count + 1; i++)
+			{
+				<option>@i</option>
+			}
+		</select>
+		<br><br>
+
+		<label>Children</label>
+		<select asp-for="@Model.Children">
+			@for (int i = 0; i < Model.BreakfastBooking.Guests.Where(g => !g.IsAdult && !g.IsCheckedIn).ToList().Count + 1; i++)
+			{
+				<option>@i</option>
+			}
+		</select>
+		<br><br>
+		<input type="submit" value="Checkin Guests">
+	</form>
 </div>
