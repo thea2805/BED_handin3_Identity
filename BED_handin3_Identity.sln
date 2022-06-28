@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BED_handin3_Identity", "BED_handin3_Identity\BED_handin3_Identity.csproj", "{4518C422-86F7-4961-A149-D64812F6E959}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4518C422-86F7-4961-A149-D64812F6E959}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4518C422-86F7-4961-A149-D64812F6E959}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4518C422-86F7-4961-A149-D64812F6E959}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4518C422-86F7-4961-A149-D64812F6E959}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A35C2D48-451C-401F-9454-510DBEE6C0D3}
+	EndGlobalSection
+EndGlobal

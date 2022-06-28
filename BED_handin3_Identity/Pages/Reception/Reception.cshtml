@@ -1,0 +1,48 @@
+﻿@page
+@model BED_handin3_Identity.Pages.Reception.ReceptionModel
+@{
+	ViewData["Title"] = "Reception";
+}
+<h1>@ViewData["Title"]</h1>
+
+<div>
+	<div>
+		<p>Specify how many guests booked breakfast</p>
+		<form method="post">
+			<label>Adults</label>
+			<input asp-for="Adults"/> <br><br>
+		
+			<label>Children</label>
+			<input asp-for="Children"/> <br><br>
+			
+			<label>RoomNumber</label>
+			<input asp-for="RoomNumber"/> <br><br>
+
+			<label >Date:</label>
+			<input type="date" asp-for="ReceptionDate" onchange="this.form.submit()"> <br><br>
+		
+			<input type="submit" value="Book Guests">
+		</form>
+	</div>
+	
+	<div>
+		<p>Current list of guests staying at the hotel, who has been checked in for breakfast</p>
+		
+		<table>
+			<tr>
+				<th>Room Number</th>
+				<th>Number of Adults</th>
+				<th>Number of Children</th>
+			</tr>
+			@foreach (var room in Model.RoomList)
+			{
+				<tr>
+					<td>@room.RoomNumber</td>
+					<td>@Model.GuestList.Where(b => b.IsAdult && room.RoomNumber == b.RoomId).ToList().Count</td>
+					<td>@Model.GuestList.Where(b => !b.IsAdult && room.RoomNumber == b.RoomId).ToList().Count</td>
+				</tr>
+			}
+		</table>
+
+	</div>
+</div>
