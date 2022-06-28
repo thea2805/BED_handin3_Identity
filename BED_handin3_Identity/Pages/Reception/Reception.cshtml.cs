@@ -1,9 +1,11 @@
 using BED_handin3_Identity.Data;
+using BED_handin3_Identity.Hub;
 using BED_handin3_Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BED_handin3_Identity.Pages.Reception
@@ -12,6 +14,7 @@ namespace BED_handin3_Identity.Pages.Reception
     public class ReceptionModel : PageModel
     {
         // Add the signalR Hub thing here and in constructor
+        private readonly IHubContext<UpdaterHub, IUpdaterHub> _updaterHubContext;
         private readonly ApplicationDbContext _context;
 
 
@@ -34,10 +37,10 @@ namespace BED_handin3_Identity.Pages.Reception
 
 
         // Constructor here 
-        public ReceptionModel(ApplicationDbContext context)
+        public ReceptionModel(ApplicationDbContext context, IHubContext<UpdaterHub, IUpdaterHub> updaterHubContext)
         {
             _context = context;
-            //signalR
+            _updaterHubContext = updaterHubContext;
         }
 
 
@@ -64,11 +67,6 @@ namespace BED_handin3_Identity.Pages.Reception
             var removed = allRooms.RemoveAll(a => bookedRooms.Any(r => a.Value == r.Value));
             SelectRooms = allRooms;
 
-            // Show a list of all checked in guests + roomNumber
-            // Find all bookings with the current date
-            // Find the attached guests with rooms 
-            // Add Guests to guestlist + rooms to roomlist
-
             var bookingList = await _context.Bookings.Where(b => b.BookingDate == TodayDate).Include(b => b.Guests)
                 .Include(b => b.Room).ToListAsync();
             foreach (var booking in bookingList)
@@ -78,11 +76,10 @@ namespace BED_handin3_Identity.Pages.Reception
                 GuestList.AddRange(guests);
             }
 
-
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostDateAsync()
         {
             // This does the same as the onGet, but with the selected date (any date)
             // Find all the booked rooms for the selected date (today)
@@ -118,7 +115,7 @@ namespace BED_handin3_Identity.Pages.Reception
             // Add to database
 
 
-            if (Adults != 0 || Children != 0)
+            if (RoomExists(RoomNumber) && (Adults != 0 || Children != 0))
             {
                 var GuestList = new List<Guest>();
                 for (int i = 0; i < Children; i++)
@@ -126,7 +123,7 @@ namespace BED_handin3_Identity.Pages.Reception
                     GuestList.Add(new Guest()
                     {
                         IsAdult = false,
-                        RoomId = RoomNumber,
+                        RoomId = RoomNumber
                     });
                 }
 
@@ -135,7 +132,7 @@ namespace BED_handin3_Identity.Pages.Reception
                     GuestList.Add(new Guest()
                     {
                         IsAdult = true,
-                        RoomId = RoomNumber,
+                        RoomId = RoomNumber
                     });
                 }
 
@@ -143,10 +140,13 @@ namespace BED_handin3_Identity.Pages.Reception
                 {
                     Guests = GuestList,
                     RoomId = RoomNumber,
-                    BookingDate = ReceptionDate,
+                    BookingDate = ReceptionDate
                 };
                 _context.Bookings.Add(newBooking);
                 await _context.SaveChangesAsync();
+
+                await _updaterHubContext.Clients.All.UpdatePage("UpdatePage");
+
                 return Page();
             }
             else
@@ -154,6 +154,11 @@ namespace BED_handin3_Identity.Pages.Reception
                 return BadRequest();
             }
             
+        }
+
+        private bool RoomExists(int id)
+        {
+            return _context.Rooms.Any(e => e.RoomId == id);
         }
     }
 }

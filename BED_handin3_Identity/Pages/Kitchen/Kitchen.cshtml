@@ -20,7 +20,7 @@
 <div>
 	<h3>Number of Guests expected for breakfast</h3>
 		
-	<table>
+	<table class="table w-auto"> 
 		<tr>
 			<th>Total number of Guests</th>
 			<th>Number of Adults</th>
@@ -42,7 +42,7 @@
 <div>
 	<h3>Number of Guests checked in for breakfast</h3>
 		
-	<table>
+	<table class="table w-auto">
 		<tr>
 			<th>Total number of Guests</th>
 			<th>Number of Adults</th>
@@ -64,7 +64,7 @@
 <div>
 	<h3>Number of Guests not checked in for breakfast</h3>
 		
-	<table>
+	<table class="table w-auto">
 		<tr>
 			<th>Total number of Guests</th>
 			<th>Number of Adults</th>
@@ -80,5 +80,18 @@
 	</table>
 
 </div>
+
+@section Scripts
+{
+	<script src="https://unpkg.com/@@microsoft/signalr@@5.0.12/dist/browser/signalr.js" crossorigin="anonymous"></script> 
+	<script>
+		const connection = new signalR.HubConnectionBuilder().withUrl("/UpdaterHub").build();
+		connection.on("UpdatePage",
+			function(message) {
+				window.location.reload()
+			});
+		connection.start();
+	</script>
+}
 
 

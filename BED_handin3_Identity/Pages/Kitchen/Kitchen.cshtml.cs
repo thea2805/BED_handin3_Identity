@@ -3,6 +3,7 @@ using BED_handin3_Identity.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
 
 namespace BED_handin3_Identity.Pages.Kitchen
 {

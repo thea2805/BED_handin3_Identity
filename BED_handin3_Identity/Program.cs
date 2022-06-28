@@ -1,8 +1,10 @@
 using BED_handin3_Identity.Data;
+using BED_handin3_Identity.Hub;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSignalR();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -60,6 +62,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapHub<UpdaterHub>("/UpdaterHub");
 
 using (var scope = app.Services.CreateScope())
 {

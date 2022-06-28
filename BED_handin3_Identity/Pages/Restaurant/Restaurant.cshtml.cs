@@ -1,9 +1,11 @@
 using BED_handin3_Identity.Data;
+using BED_handin3_Identity.Hub;
 using BED_handin3_Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace BED_handin3_Identity.Pages.Restaurant
@@ -12,10 +14,12 @@ namespace BED_handin3_Identity.Pages.Restaurant
     public class RestaurantModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<UpdaterHub, IUpdaterHub> _updaterHubContext;
 
-        public RestaurantModel(ApplicationDbContext context)
+        public RestaurantModel(ApplicationDbContext context, IHubContext<UpdaterHub, IUpdaterHub> updaterHubContext)
         {
             _context = context;
+            _updaterHubContext = updaterHubContext;
         }
 
 
@@ -78,7 +82,7 @@ namespace BED_handin3_Identity.Pages.Restaurant
                 await _context.SaveChangesAsync();
             }
 
-            for (int i = 0; i < Adults; i++)
+            for (int i = 0; i < Children; i++)
             {
                 var childGuest = BreakfastBooking.Guests.Where(g => !g.IsAdult && !g.IsCheckedIn).FirstOrDefault();
                 childGuest.IsCheckedIn = true;
@@ -86,6 +90,8 @@ namespace BED_handin3_Identity.Pages.Restaurant
 
                 await _context.SaveChangesAsync();
             }
+
+            await _updaterHubContext.Clients.All.UpdatePage("UpdatePage");
 
             return Page();
         }
