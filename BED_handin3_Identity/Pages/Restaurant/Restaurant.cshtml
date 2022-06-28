@@ -1,4 +1,24 @@
 ﻿@page
 @model BED_handin3_Identity.Pages.Restaurant.RestaurantModel
 @{
+	ViewData["Title"] = "Restaurant";
 }
+<h1>@ViewData["Title"]</h1>
+
+<h3>Check in guests for breakfast here:</h3>
+<div>
+	<form method="post">
+		<label for="room">Room nr.</label>
+		<input type="text" id="room"/> <br><br>
+		
+		<label for="adults">Adults</label>
+		<input type="text" id="adults"/> <br><br>
+		
+		<label for="children">Children</label>
+		<input type="text" id="children"/> <br><br>
+		
+		<input type="submit" value="Submit">
+	</form>
+	
+	<p>@Model.Message</p>
+</div>

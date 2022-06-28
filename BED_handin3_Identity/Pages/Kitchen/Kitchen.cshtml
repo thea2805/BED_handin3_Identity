@@ -1,4 +1,18 @@
 ﻿@page
 @model BED_handin3_Identity.Pages.Kitchen.KitchenModel
 @{
+	ViewData["Title"] = "Kitchen";
 }
+<h1>@ViewData["Title"]</h1>
+
+<h3>Choose a date to show information</h3>
+
+<br/>
+
+<form>
+	<label for="infoDate">Date:</label>
+	<input type="date" id="infoDate" value="@Model.DateReverse" name="info">
+	<input type="submit">
+</form>
+
+<br/>
