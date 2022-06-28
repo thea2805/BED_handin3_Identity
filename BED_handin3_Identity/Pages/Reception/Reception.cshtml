@@ -16,7 +16,9 @@
 			<input asp-for="Children"/> <br><br>
 			
 			<label>RoomNumber</label>
-			<input asp-for="RoomNumber"/> <br><br>
+			<select asp-for="RoomNumber" asp-items="@Model.SelectRooms">
+				<option value="" disabled selected>Choose Room</option>
+			</select>
 
 			<label >Date:</label>
 			<input type="date" asp-for="ReceptionDate" onchange="this.form.submit()"> <br><br>

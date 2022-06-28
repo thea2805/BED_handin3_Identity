@@ -3,6 +3,7 @@ using BED_handin3_Identity.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BED_handin3_Identity.Pages.Reception
@@ -23,6 +24,8 @@ namespace BED_handin3_Identity.Pages.Reception
         public DateTime ReceptionDate { get; set; } = DateTime.Today;
         [BindProperty]
         public int RoomNumber { get; set; }
+        public List<SelectListItem> SelectRooms { get; set; }
+
 
         // Bind properties here (for the list of checked in guests)
         [BindProperty] public DateTime TodayDate { get; set; } = DateTime.Today;
@@ -45,7 +48,21 @@ namespace BED_handin3_Identity.Pages.Reception
             // Remove all the booked rooms from the list of all rooms
             // The rooms will be displayed as available rooms in a drop down menu
 
+            var bookedRooms = await _context.Bookings.Where(b => b.BookingDate == ReceptionDate).Include(b => b.Room)
+                .Select(b => new SelectListItem
+                {
+                    Value = b.Room.RoomId.ToString(),
+                    Text = b.Room.RoomNumber.ToString(),
+                }).ToListAsync();
 
+            var allRooms = await _context.Rooms.Select(r => new SelectListItem
+            {
+                Value = r.RoomId.ToString(),
+                Text = r.RoomNumber.ToString(),
+            }).ToListAsync();
+
+            var removed = allRooms.RemoveAll(a => bookedRooms.Any(r => a.Value == r.Value));
+            SelectRooms = allRooms;
 
             // Show a list of all checked in guests + roomNumber
             // Find all bookings with the current date
@@ -68,6 +85,27 @@ namespace BED_handin3_Identity.Pages.Reception
         public async Task<IActionResult> OnPostAsync()
         {
             // This does the same as the onGet, but with the selected date (any date)
+            // Find all the booked rooms for the selected date (today)
+            // Find all rooms
+            // Remove all the booked rooms from the list of all rooms
+            // The rooms will be displayed as available rooms in a drop down menu
+
+            var bookedRooms = await _context.Bookings.Where(b => b.BookingDate == ReceptionDate).Include(b => b.Room)
+                .Select(b => new SelectListItem
+                {
+                    Value = b.Room.RoomId.ToString(),
+                    Text = b.Room.RoomNumber.ToString(),
+                }).ToListAsync();
+
+            var allRooms = await _context.Rooms.Select(r => new SelectListItem
+            {
+                Value = r.RoomId.ToString(),
+                Text = r.RoomNumber.ToString(),
+            }).ToListAsync();
+
+            var removed = allRooms.RemoveAll(a => bookedRooms.Any(r => a.Value == r.Value));
+            SelectRooms = allRooms;
+
             return Page();
         }
 
@@ -80,7 +118,42 @@ namespace BED_handin3_Identity.Pages.Reception
             // Add to database
 
 
-            return Page();
+            if (Adults != 0 || Children != 0)
+            {
+                var GuestList = new List<Guest>();
+                for (int i = 0; i < Children; i++)
+                {
+                    GuestList.Add(new Guest()
+                    {
+                        IsAdult = false,
+                        RoomId = RoomNumber,
+                    });
+                }
+
+                for (int i = 0; i < Adults; (i)++)
+                {
+                    GuestList.Add(new Guest()
+                    {
+                        IsAdult = true,
+                        RoomId = RoomNumber,
+                    });
+                }
+
+                var newBooking = new Booking()
+                {
+                    Guests = GuestList,
+                    RoomId = RoomNumber,
+                    BookingDate = ReceptionDate,
+                };
+                _context.Bookings.Add(newBooking);
+                await _context.SaveChangesAsync();
+                return Page();
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
         }
     }
 }
